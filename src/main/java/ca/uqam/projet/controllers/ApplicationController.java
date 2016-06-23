@@ -20,4 +20,10 @@ public class ApplicationController {
     model.addAttribute("citations", repository.findAll());
     return "index";
   }
+  
+  @RequestMapping("/test")
+  public String test(Model model){
+      model.addAttribute("citations", "allo"); 
+      return "index"; 
+  }
 }
