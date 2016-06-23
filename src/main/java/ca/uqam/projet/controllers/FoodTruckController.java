@@ -20,11 +20,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.ws.rs.core.Response;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**
  *
  * @author jmilot
  */
+@CrossOrigin(origins = "http://localhost:8000")
 @RestController
 public class FoodTruckController {
 
