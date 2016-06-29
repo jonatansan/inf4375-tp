@@ -11,7 +11,7 @@ create table foodtruck (
 
 	id serial PRIMARY KEY,
 	coordinate geometry(POINT,4326) NOT NULL,
-	name varchar(50),
+	name varchar(500),
 	datePresent varchar(50),
 	Heure_debut varchar(50),
 	Heure_fin varchar(50),
@@ -21,3 +21,14 @@ create table foodtruck (
 	description varchar(5000)
 );
 ALTER TABLE foodtruck OWNER TO inf4375;
+
+create table bixi (
+
+	id serial PRIMARY KEY,
+	coordinate geometry(POINT,4326) NOT NULL,
+	name varchar(500),
+	nbBikes INTEGER,
+	nbEmptyDocks INTEGER
+
+);
+ALTER TABLE bixi OWNER TO inf4375;

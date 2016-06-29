@@ -5,7 +5,6 @@
  */
 package ca.uqam.projet.tasks;
 
-import ca.uqam.projet.repositories.CitationRepository;
 import ca.uqam.projet.resources.FoodTruck;
 import ca.uqam.projet.resources.FoodTruck_Collection;
 import ca.uqam.projet.DAO.DAOFoodTruck;
@@ -25,13 +24,13 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class FetchFoodTruckTask {
     
-    @Scheduled(fixedRate = 50000)
-//    @Scheduled(cron = "0 0 0/12 * * *")
+//    @Scheduled(fixedRate = 1000)
+    @Scheduled(cron = "0 0 0/12 * * *")
     public void getFoodTruck() {
         
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
-        System.out.println(dateFormat.format(date)); 
+        System.out.println("Fetch Food Truck at : " + dateFormat.format(date)); 
         
         RestTemplate restTemplate = new RestTemplate();
         FoodTruck_Collection foodTruck_collection = restTemplate.getForObject("http://camionderue.com/donneesouvertes/geojson", FoodTruck_Collection.class);

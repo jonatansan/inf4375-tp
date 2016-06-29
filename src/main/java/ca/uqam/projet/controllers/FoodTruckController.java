@@ -32,7 +32,7 @@ public class FoodTruckController {
 
     @RequestMapping(value = "/horaires-camions/{debut}/{fin}", method = RequestMethod.GET)
     public List<FoodTruck> findAll(@PathVariable("debut") String debut, @PathVariable("fin") String fin, HttpServletResponse response) {
-        System.out.println(debut + " --- " + fin);
+//        System.out.println(debut + " --- " + fin);
 
         Date dateDebut = null;
         Date dateFin = null;
@@ -48,7 +48,7 @@ public class FoodTruckController {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return null;
         }
-        System.out.println(dateDebut.toString() + " " + dateFin);
+//        System.out.println(dateDebut.toString() + " " + dateFin);
         List<FoodTruck> result = DAOFoodTruck.getAll();
 
         for (Iterator<FoodTruck> it = result.iterator(); it.hasNext();) {

@@ -40,7 +40,8 @@ var handleFoodTruck = function(request){
 		var marker = new L.Marker().setLatLng([foodTruckList[i].geometry.coordinates[1], foodTruckList[i].geometry.coordinates[0] ]);
 		marker.addTo(map);
 		//marker.setIcon(L.icon ( {iconUrl: "images/marker-property.png"})); 
-		marker.on('click', onPropertyClick); 
+		marker.on('click', onFoodTruckClick); 
+		marker.setIcon(L.icon ( {iconUrl: "truck-icon.png"}));
 		marker.bindPopup(
 				"Camion: " + foodTruckList[i].properties.Camion +
 				"<br>Date: " + foodTruckList[i].properties.Date + 
@@ -54,10 +55,22 @@ var handleFoodTruck = function(request){
 
 }
 
-var onPropertyClick = function(e){
-
+var onFoodTruckClick = function(e){
+	//Fetch Bixi at 200m
+	alert(e.latlng.lat);
+	var req = createRequest(); 
+    var requestUrl = baseUrl + "bixis?lat=" + e.latlng.lat + "&lng=" + e.latlng.lng; 
+    req.onreadystatechange = function() { request
+    	if(req.readyState === req.DONE && req.status === 200) handleBixi (req); 
+    }
+    req.open("GET", requestUrl, true);
+    //req.setRequestHeader("Content-Type", "application/json");
+    req.send();
 }
 
+var handleBixi = function(e){
+
+}
 
 var removeMarker = function(){
 	for (var i = foodTruckMarker.length - 1; i >= 0; i--) {
