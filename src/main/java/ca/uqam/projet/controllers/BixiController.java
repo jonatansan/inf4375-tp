@@ -28,12 +28,8 @@ public class BixiController {
     
     @RequestMapping(value = "/bixis", method = RequestMethod.GET)
     public List<BixiStation> findBixi(@RequestParam("lat") double lat, @RequestParam("lng") double lng, HttpServletResponse response) {
-        
-        System.out.println("Request for " + lat + " " + lng); 
-        
-        DAOBixis.findFrom200m(lat, lng); 
-        
-        return null; 
+        List<BixiStation> res = DAOBixis.findFrom200m(lat, lng);
+        return res; 
     }
     
 }

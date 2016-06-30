@@ -28,14 +28,26 @@ public class DAOBixis {
         try {
             Statement st = con.createStatement();
             //TODO
-            ResultSet rs = st.executeQuery("SELECT *, ST_X(coordinate) as coorX,  ST_Y(coordinate) as coorY from foodtruck"); 
+            ResultSet rs = st.executeQuery("SELECT *, ST_X(coordinate) as coorX,  ST_Y(coordinate) as coorY from bixi"); 
             
             while(rs.next()){
                 BixiStation b = new BixiStation();
                 
-                
-                
-                results.add(b); 
+//                	id serial PRIMARY KEY,
+//	coordinate geometry(POINT,4326) NOT NULL,
+//	name varchar(500),
+//	nbBikes INTEGER,
+//	nbEmptyDocks INTEGER
+//                
+                b.id = rs.getInt("id");
+                b.lat = rs.getDouble("coorY");
+                b.lng = rs.getDouble("coorX");
+                b.name = rs.getString("name");
+                b.nbBikes = rs.getInt("nbBikes");
+                b.nbEmptyDocks = rs.getInt("nbEmptyDocks"); 
+                                
+                if(b.distance(lat, lng) < 200)
+                    results.add(b); 
             }
             
         } catch (Exception e) {

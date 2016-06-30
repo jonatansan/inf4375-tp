@@ -1,6 +1,8 @@
 var baseUrl = "http://localhost:8080/";
-var foodTruck = [];
+var foodTruckList = [];
 var foodTruckMarker = []; 
+var bixiList = [];
+var bixiMarker = []; 
 
 var map = L.map('map').setView([45.506467, -73.5717479], 13);
 
@@ -27,7 +29,7 @@ var onSearchClick = function() {
 
 var handleFoodTruck = function(request){
 
-	removeMarker(); 
+	removeMarkerFoodTruck(); 
 
 	foodTruckList = JSON.parse(request.responseText); 
 
@@ -57,7 +59,6 @@ var handleFoodTruck = function(request){
 
 var onFoodTruckClick = function(e){
 	//Fetch Bixi at 200m
-	alert(e.latlng.lat);
 	var req = createRequest(); 
     var requestUrl = baseUrl + "bixis?lat=" + e.latlng.lat + "&lng=" + e.latlng.lng; 
     req.onreadystatechange = function() { request
@@ -68,15 +69,40 @@ var onFoodTruckClick = function(e){
     req.send();
 }
 
-var handleBixi = function(e){
+var handleBixi = function(request){
+	bixiList = JSON.parse(request.responseText); 
+	console.log(bixiList.length + " bixi found !"); 
 
+	console.log(bixiList);
+
+	removeMarkerBixi(); 
+
+	for(var i = 0; i < bixiList.length; i++){
+		var marker = new L.Marker().setLatLng([bixiList[i].lat, bixiList[i].lng ]);
+		marker.addTo(map);
+
+		marker.bindPopup(
+				"Nom de la station : " + bixiList[i].name + 
+				"<br>Nombre de vélos disponibles : " + bixiList[i].nbBikes +
+				"<br>Nombre d'emplacements vides : " + bixiList[i].nbEmptyDocks
+			);
+
+		bixiMarker.push(marker); 
+	}
 }
 
-var removeMarker = function(){
+var removeMarkerFoodTruck = function(){
 	for (var i = foodTruckMarker.length - 1; i >= 0; i--) {
 		map.removeLayer(foodTruckMarker[i]); 
 	};
 	foodTruckMarker = []; 
+}
+
+var removeMarkerBixi = function(){
+	for (var i = bixiMarker.length - 1; i >= 0; i--) {
+		map.removeLayer(bixiMarker[i]); 
+	};
+	bixiMarker = []; 
 }
 
 var createRequest = function() {
