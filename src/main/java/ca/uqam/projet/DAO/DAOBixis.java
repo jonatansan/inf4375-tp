@@ -7,6 +7,7 @@ package ca.uqam.projet.DAO;
 
 import ca.uqam.projet.Application;
 import ca.uqam.projet.resources.BixiStation;
+import ca.uqam.projet.resources.Distance;
 import ca.uqam.projet.resources.FoodTruck;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -19,46 +20,40 @@ import java.util.List;
  * @author jmilot
  */
 public class DAOBixis {
-    
-    public static List<BixiStation> findFrom200m(double lat, double lng){
+
+    public static List<BixiStation> findFrom200m(double lat, double lng) {
         List<BixiStation> results = new LinkedList<>();
-        
-         Connection con = Application.dbConnectionPool.getConnection();
+
+        Connection con = Application.dbConnectionPool.getConnection();
 
         try {
             Statement st = con.createStatement();
-            //TODO
-            ResultSet rs = st.executeQuery("SELECT *, ST_X(coordinate) as coorX,  ST_Y(coordinate) as coorY from bixi"); 
-            
-            while(rs.next()){
+            ResultSet rs = st.executeQuery("SELECT *, ST_X(coordinate) as coorX,  ST_Y(coordinate) as coorY from bixi");
+
+            while (rs.next()) {
                 BixiStation b = new BixiStation();
-                
-//                	id serial PRIMARY KEY,
-//	coordinate geometry(POINT,4326) NOT NULL,
-//	name varchar(500),
-//	nbBikes INTEGER,
-//	nbEmptyDocks INTEGER
-//                
+
                 b.id = rs.getInt("id");
                 b.lat = rs.getDouble("coorY");
                 b.lng = rs.getDouble("coorX");
                 b.name = rs.getString("name");
                 b.nbBikes = rs.getInt("nbBikes");
-                b.nbEmptyDocks = rs.getInt("nbEmptyDocks"); 
-                                
-                if(b.distance(lat, lng) < 200)
-                    results.add(b); 
+                b.nbEmptyDocks = rs.getInt("nbEmptyDocks");
+
+                if (Distance.inMeter(lat, lng, b.lat, b.lng) < 200) {
+                    results.add(b);
+                }
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         Application.dbConnectionPool.releaseConnection(con);
-        
-        return results; 
+
+        return results;
     }
-    
-    public static void save(BixiStation b){
+
+    public static void save(BixiStation b) {
         Connection con = Application.dbConnectionPool.getConnection();
 
         try {
@@ -75,20 +70,20 @@ public class DAOBixis {
         }
         Application.dbConnectionPool.releaseConnection(con);
     }
-    
-    public static void clearBixi(){
-          Connection con = Application.dbConnectionPool.getConnection();
+
+    public static void clearBixi() {
+        Connection con = Application.dbConnectionPool.getConnection();
 
         try {
             Statement st = con.createStatement();
 
             st.executeUpdate("DELETE FROM bixi");
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         Application.dbConnectionPool.releaseConnection(con);
     }
-    
+
 }

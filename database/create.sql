@@ -32,3 +32,9 @@ create table bixi (
 
 );
 ALTER TABLE bixi OWNER TO inf4375;
+
+create table arceau (
+	id serial PRIMARY KEY,
+	coordinate geometry(POINT,4326) NOT NULL
+); 
+ALTER TABLE arceau OWNER TO inf4375;

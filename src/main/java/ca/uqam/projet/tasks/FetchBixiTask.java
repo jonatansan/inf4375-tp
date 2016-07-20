@@ -23,7 +23,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class FetchBixiTask {
 
-//    @Scheduled(fixedRate = 1000)
+//    @Scheduled(fixedRate = 10000)
     @Scheduled(cron = "0 */10 * * * *")
     public void getBixi() {
 

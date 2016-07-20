@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class FetchFoodTruckTask {
     
-//    @Scheduled(fixedRate = 1000)
+//    @Scheduled(fixedRate = 10000)
     @Scheduled(cron = "0 0 0/12 * * *")
     public void getFoodTruck() {
         
