@@ -3,6 +3,8 @@ var foodTruckList = [];
 var foodTruckMarker = []; 
 var bixiList = [];
 var bixiMarker = []; 
+var arceauList = [];
+var arceauMarker = []; 
 
 var map = L.map('map').setView([45.506467, -73.5717479], 13);
 
@@ -14,6 +16,10 @@ L.tileLayer('http://tuile.lookupia.com/{z}/{x}/{y}.png', {
 var onSearchClick = function() {
 
 	foodTruck = [];
+	removeMarkerBixi();
+	removeMarkerArceau();
+	removeMarkerFoodTruck(); 
+	
 	var dateDebut = document.getElementById("dateDebut").value; 
 	var dateFin = document.getElementById("dateFin").value; 
 
@@ -21,6 +27,9 @@ var onSearchClick = function() {
     var requestUrl = baseUrl + "horaires-camions/" + dateDebut + "/" + dateFin; 
     req.onreadystatechange = function() { request
     	if(req.readyState === req.DONE && req.status === 200) handleFoodTruck (req); 
+    	else if(req.readyState === req.DONE && req.status === 400) {
+    		alert("Erreur dans le format de date. Entrez les dates sous le format 2000-01-31. ");
+    	}
     }
     req.open("GET", requestUrl, true);
     //req.setRequestHeader("Content-Type", "application/json");
@@ -67,13 +76,23 @@ var onFoodTruckClick = function(e){
     req.open("GET", requestUrl, true);
     //req.setRequestHeader("Content-Type", "application/json");
     req.send();
+
+    //Fetch arceau
+    var req2 = createRequest(); 
+    var requestUrl2 = baseUrl + "arceaux?lat=" + e.latlng.lat + "&lng=" + e.latlng.lng; 
+    req2.onreadystatechange = function() { request
+    	if(req2.readyState === req2.DONE && req2.status === 200) handleArceau (req2); 
+    }
+    req2.open("GET", requestUrl2, true);
+    //req.setRequestHeader("Content-Type", "application/json");
+    req2.send();
 }
 
 var handleBixi = function(request){
 	bixiList = JSON.parse(request.responseText); 
-	console.log(bixiList.length + " bixi found !"); 
+	//console.log(bixiList.length + " bixi found !"); 
 
-	console.log(bixiList);
+	//console.log(bixiList);
 
 	removeMarkerBixi(); 
 
@@ -82,13 +101,29 @@ var handleBixi = function(request){
 		marker.addTo(map);
 
 		marker.bindPopup(
-				"Nom de la station : " + bixiList[i].name + 
-				"<br>Nombre de vélos disponibles : " + bixiList[i].nbBikes +
-				"<br>Nombre d'emplacements vides : " + bixiList[i].nbEmptyDocks
-			);
+			"Nom de la station : " + bixiList[i].name + 
+			"<br>Nombre de vélos disponibles : " + bixiList[i].nbBikes +
+			"<br>Nombre d'emplacements vides : " + bixiList[i].nbEmptyDocks
+		);
 
 		bixiMarker.push(marker); 
 	}
+}
+
+
+var handleArceau = function(request){
+	arceauList = JSON.parse(request.responseText); 
+	removeMarkerArceau(); 
+
+	for (var i = 0; i < arceauList.length; i++) {
+		var marker = new L.Marker().setLatLng([arceauList[i].lat, arceauList[i].lng ]);
+		marker.addTo(map);
+		marker.bindPopup(
+			"Un magnifique arceau !"
+		);
+		marker.setIcon(L.icon ( {iconUrl: "lock.png"}));
+		arceauMarker.push(marker); 
+	};
 }
 
 var removeMarkerFoodTruck = function(){
@@ -103,6 +138,13 @@ var removeMarkerBixi = function(){
 		map.removeLayer(bixiMarker[i]); 
 	};
 	bixiMarker = []; 
+}
+
+var removeMarkerArceau = function(){
+	for (var i = arceauMarker.length - 1; i >= 0; i--) {
+		map.removeLayer(arceauMarker[i]); 
+	};
+	arceauMarker = []; 
 }
 
 var createRequest = function() {
