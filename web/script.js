@@ -19,7 +19,7 @@ var onSearchClick = function() {
 	removeMarkerBixi();
 	removeMarkerArceau();
 	removeMarkerFoodTruck(); 
-	
+
 	var dateDebut = document.getElementById("dateDebut").value; 
 	var dateFin = document.getElementById("dateFin").value; 
 
@@ -48,53 +48,81 @@ var handleFoodTruck = function(request){
 	console.log(foodTruckList);
 
 	for(var i = 0; i < foodTruckList.length; i++){
-		var marker = new L.Marker().setLatLng([foodTruckList[i].geometry.coordinates[1], foodTruckList[i].geometry.coordinates[0] ]);
-		marker.addTo(map);
-		//marker.setIcon(L.icon ( {iconUrl: "images/marker-property.png"})); 
-		marker.on('click', onFoodTruckClick); 
-		marker.setIcon(L.icon ( {iconUrl: "truck-icon.png"}));
-		marker.bindPopup(
-				"Camion: " + foodTruckList[i].properties.Camion +
-				"<br>Date: " + foodTruckList[i].properties.Date + 
-				"<br>Heure arrivée: " + foodTruckList[i].properties.Heure_debut + 
-				"<br>Heure départ: " + foodTruckList[i].properties.Heure_fin + 
-				"<br>Emplacement: " + foodTruckList[i].properties.Lieu
-			);
-		foodTruckMarker.push(marker); 
-		marker.id = i; 
+		var m = foodTruckAtThisPlace(foodTruckList[i].geometry.coordinates[1], foodTruckList[i].geometry.coordinates[0]);
+		if(m !== null)
+		{
+			m.popupText += "<br>------------------------------" + 
+					"<br>Camion: " + foodTruckList[i].properties.Camion +
+					"<br>Date: " + foodTruckList[i].properties.Date + 
+					"<br>Heure arrivée: " + foodTruckList[i].properties.Heure_debut + 
+					"<br>Heure départ: " + foodTruckList[i].properties.Heure_fin + 
+					"<br>Emplacement: " + foodTruckList[i].properties.Lieu; 
+		}
+		else {
+			var marker = new L.Marker().setLatLng([foodTruckList[i].geometry.coordinates[1], foodTruckList[i].geometry.coordinates[0] ]);
+			marker.addTo(map);
+			//marker.setIcon(L.icon ( {iconUrl: "images/marker-property.png"})); 
+			marker.on('click', onFoodTruckClick); 
+			marker.setIcon(L.icon ( {iconUrl: "truck-icon.png"}));
+			marker.popupText = 
+					"Camion: " + foodTruckList[i].properties.Camion +
+					"<br>Date: " + foodTruckList[i].properties.Date + 
+					"<br>Heure arrivée: " + foodTruckList[i].properties.Heure_debut + 
+					"<br>Heure départ: " + foodTruckList[i].properties.Heure_fin + 
+					"<br>Emplacement: " + foodTruckList[i].properties.Lieu;
+			foodTruckMarker.push(marker); 
+			marker.id = i; 
+		}
+	}
+
+	for(var i = 0; i < foodTruckMarker.length; i++){
+		foodTruckMarker[i].bindPopup( foodTruckMarker[i].popupText ); 
 	}
 
 }
 
+var foodTruckAtThisPlace = function(lat, lng){
+	for (var i = 0; i < foodTruckMarker.length; i++) {
+		if(foodTruckMarker[i].getLatLng().lat === lat && foodTruckMarker[i].getLatLng().lng === lng){
+			console.log("Oui!"); 
+			return foodTruckMarker[i]; 
+		} 
+	}
+	return null; 
+}
+
 var onFoodTruckClick = function(e){
+
+	removeMarkerBixi(); 
+	removeMarkerArceau(); 
+	
 	//Fetch Bixi at 200m
-	var req = createRequest(); 
-    var requestUrl = baseUrl + "bixis?lat=" + e.latlng.lat + "&lng=" + e.latlng.lng; 
-    req.onreadystatechange = function() { request
-    	if(req.readyState === req.DONE && req.status === 200) handleBixi (req); 
-    }
-    req.open("GET", requestUrl, true);
-    //req.setRequestHeader("Content-Type", "application/json");
-    req.send();
+	if(document.getElementById("bixi").checked){
+		var req = createRequest(); 
+	    var requestUrl = baseUrl + "bixis?lat=" + e.latlng.lat + "&lng=" + e.latlng.lng; 
+	    req.onreadystatechange = function() { request
+	    	if(req.readyState === req.DONE && req.status === 200) handleBixi (req); 
+	    }
+	    req.open("GET", requestUrl, true);
+	    //req.setRequestHeader("Content-Type", "application/json");
+	    req.send();
+	}
 
     //Fetch arceau
-    var req2 = createRequest(); 
-    var requestUrl2 = baseUrl + "arceaux?lat=" + e.latlng.lat + "&lng=" + e.latlng.lng; 
-    req2.onreadystatechange = function() { request
-    	if(req2.readyState === req2.DONE && req2.status === 200) handleArceau (req2); 
-    }
-    req2.open("GET", requestUrl2, true);
-    //req.setRequestHeader("Content-Type", "application/json");
-    req2.send();
+    if(document.getElementById("arceau").checked){
+	    var req2 = createRequest(); 
+	    var requestUrl2 = baseUrl + "arceaux?lat=" + e.latlng.lat + "&lng=" + e.latlng.lng; 
+	    req2.onreadystatechange = function() { request
+	    	if(req2.readyState === req2.DONE && req2.status === 200) handleArceau (req2); 
+	    }
+	    req2.open("GET", requestUrl2, true);
+	    //req.setRequestHeader("Content-Type", "application/json");
+	    req2.send();
+	}
 }
 
 var handleBixi = function(request){
 	bixiList = JSON.parse(request.responseText); 
-	//console.log(bixiList.length + " bixi found !"); 
-
-	//console.log(bixiList);
-
-	removeMarkerBixi(); 
 
 	for(var i = 0; i < bixiList.length; i++){
 		var marker = new L.Marker().setLatLng([bixiList[i].lat, bixiList[i].lng ]);
@@ -113,7 +141,6 @@ var handleBixi = function(request){
 
 var handleArceau = function(request){
 	arceauList = JSON.parse(request.responseText); 
-	removeMarkerArceau(); 
 
 	for (var i = 0; i < arceauList.length; i++) {
 		var marker = new L.Marker().setLatLng([arceauList[i].lat, arceauList[i].lng ]);

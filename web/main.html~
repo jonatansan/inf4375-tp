@@ -11,8 +11,8 @@
 </head>
 <body>
 	<textarea id="dateDebut" rows="1" cols="10">1998-09-01</textarea>
-	<textarea id="dateFin" rows="1" cols="10">2999-10-12</textarea>
-	<button type="button" onclick="onSearchClick()">Rechercher !</button>
+	<textarea id="dateFin" rows="1" cols="10">1999-10-12</textarea>
+	<button type="button" onclick="onSearchClick()">FoodTruck !</button>
 	<form>
 		<input type="checkbox" id="bixi" value="Bike" checked>Montrer bixi<br>
 		<input type="checkbox" id="arceau" value="Car" checked>Monter arceau<br>
